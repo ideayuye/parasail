@@ -6,7 +6,7 @@ emcc -I/home/bill/Desktop/lab/parasail-master test.c -o ./build/res.js -s WASM=1
 
 ### cmake build:
 
-ecmmake cmake ..
+emcmake cmake ..
 emmake make
 
 #### single build command:

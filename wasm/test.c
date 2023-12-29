@@ -32,6 +32,12 @@ int main(int arc, char** argv) {
 	return 0;
 }
 
+char* to_buffer(char* qr) {
+    char* buffer = (char*)malloc(strlen(qr) + 1);
+	strcpy(buffer, qr);
+    return buffer;
+}
+
 EMSCRIPTEN_KEEPALIVE
 int add (int a, int b) {
 	
@@ -43,7 +49,7 @@ int add (int a, int b) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char* parasail_sw_wrap(char* s, char* t, char* matrixname) {
+int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     const parasail_matrix_t* matrix = parasail_matrix_lookup(matrixname);
     // if (matrix == NULL) {
     //     matrix = &parasail_blosum62;
@@ -66,15 +72,26 @@ char* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     printf("align: %s\n", traceback->comp);
     printf("target: %s\n", traceback->ref);
     printf("\n");
-    char* qr = traceback->query;
-    char* buffer = (char*)malloc(strlen(qr) + 1);
-    // Copy the string to the allocated memory
-	strcpy(buffer, qr);
+    int* res[2];
+    char* qr = to_buffer(traceback->query);
+    char* com = to_buffer(traceback->comp);
+    res[0] = qr;
+    res[1] = com;
     parasail_traceback_free(traceback);
-
     parasail_result_free(result);
-    return buffer;
+    return res;
 }
+
+// char* get_query(parasail_traceback_t* traceback) {
+//     char* qr = traceback->query;
+//     char* buffer = (char*)malloc(strlen(qr) + 1);
+//     // Copy the string to the allocated memory
+// 	strcpy(buffer, qr);
+//     // parasail_traceback_free(traceback);
+
+//     // parasail_result_free(result);
+//     return buffer;
+// }
 
 EMSCRIPTEN_KEEPALIVE
 int* create_buffer(int length) {

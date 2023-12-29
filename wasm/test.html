@@ -15,6 +15,9 @@
             Module.stringToUTF8(inputString, mm, stringLength);
             return mm;
         }
+        function batchFree(arr) {
+            arr.forEach(a => Module._free_str_memory(a))
+        }
         function tx() {
             const inputString = 'CAGCTGAGCTTTCCACCCAGCGCGGGTGCATTCTGGCTCTTATATATACTTATTGTCATGACAGAGTATATTGTACTGTAATT';
             const inputString1 = 'TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCATACTGTAATT';
@@ -23,10 +26,7 @@
             const matrix = createStr('blosum62');
             let res = Module._parasail_sw_wrap(a, b, matrix);
             const strFromWasm = Module.UTF8ToString(res);
-            Module._free_str_memory(res);
-            Module._free_str_memory(a);
-            Module._free_str_memory(b);
-            Module._free_str_memory(matrix);
+            batchFree([res, a, b, matrix]);
             console.log('get str', strFromWasm);
         }
     </script>
