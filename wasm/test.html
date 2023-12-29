@@ -7,7 +7,7 @@
 </head>
 <body>
     <div>wa test lid</div>
-    <script src="./wa_test.js"></script>
+    <script src="./build/wa_test.js"></script>
     <script>
         function createStr(inputString) {
             const stringLength = Module.lengthBytesUTF8(inputString) + 1; // ���� null ��ֹ��
@@ -20,11 +20,13 @@
             const inputString1 = 'TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCATACTGTAATT';
             const a = createStr(inputString);
             const b = createStr(inputString1);
-            let res = Module._parasail_sw_wrap(a, b);
+            const matrix = createStr('blosum62');
+            let res = Module._parasail_sw_wrap(a, b, matrix);
             const strFromWasm = Module.UTF8ToString(res);
             Module._free_str_memory(res);
             Module._free_str_memory(a);
             Module._free_str_memory(b);
+            Module._free_str_memory(matrix);
             console.log('get str', strFromWasm);
         }
     </script>

@@ -1,0 +1,14 @@
+{
+  "name": "wasm",
+  "version": "1.0.0",
+  "description": "``` emcc -I/home/bill/Desktop/lab/parasail-master test.c -o ./build/res.js -s WASM=1 -s EXPORTED_RUNTIME_METHODS='[\"UTF8ToString\", \"lengthBytesUTF8\", \"stringToUTF8\"]' ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "emcc -I../ test.c -c -o build/res.o",
+    "link": "emcc build/res.o ../build/libparasail.a -o build/wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS='[\"UTF8ToString\", \"lengthBytesUTF8\", \"stringToUTF8\"]'",
+    "done": "npm run build & npm run link"
+  },
+  "author": "",
+  "license": "ISC"
+}

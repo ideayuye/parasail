@@ -13,8 +13,8 @@ emmake make
 
 ```
 <!-- gennerate assembling file "xx.o" -->
-emcc -I../ test.c -c -o res.o -s WASM=1
+emcc -I../ test.c -c -o build/res.o
 
 <!-- link "xxx.o" with "libparasail.a" gennerate wasm module -->
-emcc res.o ../buildEM/libparasail.a -o wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["UTF8ToString", "lengthBytesUTF8", "stringToUTF8"]'
+emcc build/res.o ../build/libparasail.a -o build/wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["UTF8ToString", "lengthBytesUTF8", "stringToUTF8"]'
 ```

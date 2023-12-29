@@ -43,21 +43,24 @@ int add (int a, int b) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char* parasail_sw_wrap(char* s, char* t) {
-    // char *s = "CAGCTGAGCTTTCCACCCAGCGCGGGTGCATTCTGGCTCTTATATATACTTATTGTCATGACAGAGTATATTGTACTGTGTTGATAAGGGACGGGTAACTGTATTGAAGAGCCGATGCTTTTGACATGTTAGATATAATA";
-    // char *t = "TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCACCCTGACCTACGGCGTGCAGTGCTTCAGCCGCTACCCCGACCACATGAAGCAGCACGACTTCTTCAA";
+char* parasail_sw_wrap(char* s, char* t, char* matrixname) {
+    const parasail_matrix_t* matrix = parasail_matrix_lookup(matrixname);
+    // if (matrix == NULL) {
+    //     matrix = &parasail_blosum62;
+    // }
+    printf("matrix: %s \n", matrixname);
 
     int lena = strlen(s);
     int lenb = strlen(t);
     // parasail_matrix_t* matrix = &parasail_blosum62;
 
     parasail_result_t* result = NULL;
-    result = parasail_sw_trace(s, lena, t, lenb, 10, 1, &parasail_blosum62);
+    result = parasail_sw_trace(s, lena, t, lenb, 10, 1, matrix);
 
     parasail_traceback_t* traceback = NULL;
 
     /* test new traceback string functions */
-    traceback = parasail_result_get_traceback(result, s, lena, t, lenb, &parasail_blosum62, '|', ':', '.');
+    traceback = parasail_result_get_traceback(result, s, lena, t, lenb, matrix, '|', ':', '.');
     printf("\nTraceback string function\n");
     printf("query: %s\n", traceback->query);
     printf("align: %s\n", traceback->comp);
