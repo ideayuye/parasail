@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "emcc -I../ test.c -c -o build/res.o",
-    "link": "emcc build/res.o ../build/libparasail.a -o build/wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS='[\"UTF8ToString\", \"lengthBytesUTF8\", \"stringToUTF8\"]'",
+    "link": "emcc build/res.o libparasail.a -o build/wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS=\"['UTF8ToString', 'lengthBytesUTF8', 'stringToUTF8']\"",
     "done": "npm run build & npm run link"
   },
   "author": "",
