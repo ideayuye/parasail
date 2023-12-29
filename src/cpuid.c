@@ -58,22 +58,22 @@ int parasail_can_use_neon() { return 0; }
 # include <intrin.h>
 #endif
 
-static void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
-{
-#if defined(_MSC_VER)
-    __cpuidex(abcd, eax, ecx);
-#else
-    uint32_t ebx=0, edx=0;
-# if defined( __i386__ ) && defined ( __PIC__ )
-     /* in case of PIC under 32-bit EBX cannot be clobbered */
-    __asm__ ( "movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
-# else
-    __asm__ ( "cpuid" : "+b" (ebx),
-# endif
-              "+a" (eax), "+c" (ecx), "=d" (edx) );
-    abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
-#endif
-}
+// static void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
+// {
+// #if defined(_MSC_VER)
+//     __cpuidex(abcd, eax, ecx);
+// #else
+//     uint32_t ebx=0, edx=0;
+// # if defined( __i386__ ) && defined ( __PIC__ )
+//      /* in case of PIC under 32-bit EBX cannot be clobbered */
+//     __asm__ ( "movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
+// # else
+//     __asm__ ( "cpuid" : "+b" (ebx),
+// # endif
+//               "+a" (eax), "+c" (ecx), "=d" (edx) );
+//     abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
+// #endif
+// }
 
 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
@@ -147,118 +147,118 @@ static int check_xcr0_zmm()
 
 static int check_4th_gen_intel_core_features()
 {
-    /* we only care about avx2, not the other features */
-    uint32_t abcd[4];
-    //uint32_t fma_movbe_osxsave_mask = ((1U << 12) | (1U << 22) | (1U << 27));
-    //uint32_t avx2_bmi12_mask = (1U << 5) | (1U << 3) | (1U << 8);
-    uint32_t avx2_mask = (1U << 5);
+//     /* we only care about avx2, not the other features */
+//     uint32_t abcd[4];
+//     //uint32_t fma_movbe_osxsave_mask = ((1U << 12) | (1U << 22) | (1U << 27));
+//     //uint32_t avx2_bmi12_mask = (1U << 5) | (1U << 3) | (1U << 8);
+//     uint32_t avx2_mask = (1U << 5);
 
-#if 0
-    /* CPUID.(EAX=01H, ECX=0H):ECX.FMA[bit 12]==1   &&
-       CPUID.(EAX=01H, ECX=0H):ECX.MOVBE[bit 22]==1 &&
-       CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
-    run_cpuid( 1, 0, abcd );
-    if ( (abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask )
-        return 0;
+// #if 0
+//     /* CPUID.(EAX=01H, ECX=0H):ECX.FMA[bit 12]==1   &&
+//        CPUID.(EAX=01H, ECX=0H):ECX.MOVBE[bit 22]==1 &&
+//        CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
+//     run_cpuid( 1, 0, abcd );
+//     if ( (abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask )
+//         return 0;
 
-    if ( ! check_xcr0_ymm() )
-        return 0;
-#endif
+//     if ( ! check_xcr0_ymm() )
+//         return 0;
+// #endif
 
-    /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX2[bit 5]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
-    run_cpuid( 7, 0, abcd );
-#if 0
-    if ( (abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask )
-        return 0;
-#else
-    if ( (abcd[1] & avx2_mask) != avx2_mask )
-        return 0;
-#endif
+//     /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX2[bit 5]==1  &&
+//         CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
+//         CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
+//     run_cpuid( 7, 0, abcd );
+// #if 0
+//     if ( (abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask )
+//         return 0;
+// #else
+//     if ( (abcd[1] & avx2_mask) != avx2_mask )
+//         return 0;
+// #endif
 
-#if 0
-    /* CPUID.(EAX=80000001H):ECX.LZCNT[bit 5]==1 */
-    run_cpuid( 0x80000001, 0, abcd );
-    if ( (abcd[2] & (1U << 5)) == 0)
-        return 0;
-#endif
+// #if 0
+//     /* CPUID.(EAX=80000001H):ECX.LZCNT[bit 5]==1 */
+//     run_cpuid( 0x80000001, 0, abcd );
+//     if ( (abcd[2] & (1U << 5)) == 0)
+//         return 0;
+// #endif
 
-    return 1;
+    return 0;
 }
 
 static int has_intel_avx512f_features() {
-    uint32_t abcd[4];
-    uint32_t osxsave_mask = (1U << 27); /* OSX. */
-    uint32_t avx512f_mask = (1U << 16) | /* AVX-512F */
-        (1U << 26) | /* AVX-512PF */
-        (1U << 27) | /* AVX-512ER */
-        (1U << 28);  /* AVX-512CD */
+    // uint32_t abcd[4];
+    // uint32_t osxsave_mask = (1U << 27); /* OSX. */
+    // uint32_t avx512f_mask = (1U << 16) | /* AVX-512F */
+    //     (1U << 26) | /* AVX-512PF */
+    //     (1U << 27) | /* AVX-512ER */
+    //     (1U << 28);  /* AVX-512CD */
 
-    /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
-    run_cpuid( 1, 0, abcd );
-    if ( (abcd[2] & osxsave_mask) != osxsave_mask )
-        return 0;
+    // /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
+    // run_cpuid( 1, 0, abcd );
+    // if ( (abcd[2] & osxsave_mask) != osxsave_mask )
+    //     return 0;
 
-    if ( ! check_xcr0_zmm() )
-        return 0;
+    // if ( ! check_xcr0_zmm() )
+    //     return 0;
 
-    /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX-512F [bit 16]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.AVX-512PF[bit 26]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.AVX-512ER[bit 27]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.AVX-512CD[bit 28]==1  */
-    run_cpuid( 7, 0, abcd );
-    if ( (abcd[1] & avx512f_mask) != avx512f_mask )
-        return 0;
+    // /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX-512F [bit 16]==1  &&
+    //     CPUID.(EAX=07H, ECX=0H):EBX.AVX-512PF[bit 26]==1  &&
+    //     CPUID.(EAX=07H, ECX=0H):EBX.AVX-512ER[bit 27]==1  &&
+    //     CPUID.(EAX=07H, ECX=0H):EBX.AVX-512CD[bit 28]==1  */
+    // run_cpuid( 7, 0, abcd );
+    // if ( (abcd[1] & avx512f_mask) != avx512f_mask )
+    //     return 0;
 
-    return 1;
+    return 0;
 }
 
 static int has_intel_avx512bw_features() {
-    uint32_t abcd[4];
-    uint32_t osxsave_mask = (1U << 27); /* OSX. */
-    uint32_t avx512bw_mask = (1U << 30) | /* AVX-512BW */
-        (1U << 17) | /* AVX-512DQ */
-        (1U << 31);  /* AVX-512VL */
+    // uint32_t abcd[4];
+    // uint32_t osxsave_mask = (1U << 27); /* OSX. */
+    // uint32_t avx512bw_mask = (1U << 30) | /* AVX-512BW */
+    //     (1U << 17) | /* AVX-512DQ */
+    //     (1U << 31);  /* AVX-512VL */
 
-    /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
-    run_cpuid( 1, 0, abcd );
-    if ( (abcd[2] & osxsave_mask) != osxsave_mask )
-        return 0;
+    // /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
+    // run_cpuid( 1, 0, abcd );
+    // if ( (abcd[2] & osxsave_mask) != osxsave_mask )
+    //     return 0;
 
-    if ( ! check_xcr0_zmm() )
-        return 0;
+    // if ( ! check_xcr0_zmm() )
+    //     return 0;
 
-    /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX-512BW[bit 30]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.AVX-512DQ[bit 17]==1  &&
-        CPUID.(EAX=07H, ECX=0H):EBX.AVX-512VL[bit 31]==1  */
-    run_cpuid( 7, 0, abcd );
-    if ( (abcd[1] & avx512bw_mask) != avx512bw_mask )
-        return 0;
+    // /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX-512BW[bit 30]==1  &&
+    //     CPUID.(EAX=07H, ECX=0H):EBX.AVX-512DQ[bit 17]==1  &&
+    //     CPUID.(EAX=07H, ECX=0H):EBX.AVX-512VL[bit 31]==1  */
+    // run_cpuid( 7, 0, abcd );
+    // if ( (abcd[1] & avx512bw_mask) != avx512bw_mask )
+    //     return 0;
 
-    return 1;
+    return 0;
 }
 
 static int has_intel_avx512vbmi_features()
 {
-    uint32_t abcd[4];
-    uint32_t osxsave_mask = (1U << 27); /* OSX. */
-    uint32_t avx512vbmi_mask = (1U << 1); /* AVX-512VBMI */
+    // uint32_t abcd[4];
+    // uint32_t osxsave_mask = (1U << 27); /* OSX. */
+    // uint32_t avx512vbmi_mask = (1U << 1); /* AVX-512VBMI */
 
-    /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
-    run_cpuid( 1, 0, abcd );
-    if ( (abcd[2] & osxsave_mask) != osxsave_mask )
-        return 0;
+    // /* CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
+    // run_cpuid( 1, 0, abcd );
+    // if ( (abcd[2] & osxsave_mask) != osxsave_mask )
+    //     return 0;
 
-    if ( ! check_xcr0_zmm() )
-        return 0;
+    // if ( ! check_xcr0_zmm() )
+    //     return 0;
 
-    /*  CPUID.(EAX=07H, ECX=0H):ECX.AVX-512VBMI[bit 1]==1 */
-    run_cpuid( 7, 0, abcd );
-    if ( (abcd[2] & avx512vbmi_mask) != avx512vbmi_mask )
-        return 0;
+    // /*  CPUID.(EAX=07H, ECX=0H):ECX.AVX-512VBMI[bit 1]==1 */
+    // run_cpuid( 7, 0, abcd );
+    // if ( (abcd[2] & avx512vbmi_mask) != avx512vbmi_mask )
+    //     return 0;
 
-    return 1;
+    return 0;
 }
 
 #endif /* non-Intel compiler */
@@ -266,17 +266,17 @@ static int has_intel_avx512vbmi_features()
 
 static int check_sse41()
 {
-    uint32_t info[4];
-    uint32_t nIds;
+    // uint32_t info[4];
+    // uint32_t nIds;
 
-    run_cpuid(0, 0, info);
-    nIds = info[0];
+    // run_cpuid(0, 0, info);
+    // nIds = info[0];
 
-    /*  Detect Instruction Set */
-    if (nIds >= 1){
-        run_cpuid(0x00000001, 0, info);
-        return (info[2] & (1U << 19)) != 0;
-    }
+    // /*  Detect Instruction Set */
+    // if (nIds >= 1){
+    //     run_cpuid(0x00000001, 0, info);
+    //     return (info[2] & (1U << 19)) != 0;
+    // }
 
     return 0;
 }
@@ -284,19 +284,19 @@ static int check_sse41()
 
 static int check_sse2()
 {
-    uint32_t info[4];
-    uint32_t nIds;
+    // uint32_t info[4];
+    // uint32_t nIds;
 
-    run_cpuid(0, 0, info);
-    nIds = info[0];
+    // run_cpuid(0, 0, info);
+    // nIds = info[0];
 
-    /*  Detect Instruction Set */
-    if (nIds >= 1){
-        run_cpuid(0x00000001, 0, info);
-        return (info[3] & (1U << 26)) != 0;
-    }
+    // /*  Detect Instruction Set */
+    // if (nIds >= 1){
+    //     run_cpuid(0x00000001, 0, info);
+    //     return (info[3] & (1U << 26)) != 0;
+    // }
 
-    return 0;
+    return 1;
 }
 
 

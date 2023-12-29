@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test align</title>
+</head>
+<body>
+    <div>wa test lid</div>
+    <script src="./wa_test.js"></script>
+    <script>
+        function createStr(inputString) {
+            const stringLength = Module.lengthBytesUTF8(inputString) + 1; // ���� null ��ֹ��
+            const mm = Module._create_buffer(stringLength);
+            Module.stringToUTF8(inputString, mm, stringLength);
+            return mm;
+        }
+        function tx() {
+            const inputString = 'CAGCTGAGCTTTCCACCCAGCGCGGGTGCATTCTGGCTCTTATATATACTTATTGTCATGACAGAGTATATTGTACTGTAATT';
+            const inputString1 = 'TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCATACTGTAATT';
+            const a = createStr(inputString);
+            const b = createStr(inputString1);
+            let res = Module._parasail_sw_wrap(a, b);
+            const strFromWasm = Module.UTF8ToString(res);
+            Module._free_str_memory(res);
+            Module._free_str_memory(a);
+            Module._free_str_memory(b);
+            console.log('get str', strFromWasm);
+        }
+    </script>
+</body>
+</html>
