@@ -39,3 +39,4 @@ parasail-*.pc
 parasail-*.pc.in
 /build
 /wasm/build
+/out
