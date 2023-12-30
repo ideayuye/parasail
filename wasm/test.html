@@ -25,9 +25,24 @@
             const b = createStr(inputString1);
             const matrix = createStr('blosum62');
             let res = Module._parasail_sw_wrap(a, b, matrix);
-            const strFromWasm = Module.UTF8ToString(res);
-            batchFree([res, a, b, matrix]);
-            console.log('get str', strFromWasm);
+            const arrRes = new Int32Array(Module.HEAP32.buffer, res, 3);
+            console.log(arrRes, 'arr');
+            console.log('query:', Module.UTF8ToString(arrRes[0]));
+            console.log('align:', Module.UTF8ToString(arrRes[1]));
+            console.log('ref:', Module.UTF8ToString(arrRes[2]));
+            batchFree([res, a, b, matrix, arrRes]);
+
+        }
+        function qs() {
+            // 调用 createIntArray 获取整数数组的指针
+            const intArrayPointer = Module._createIntArray()
+
+            // 使用 HEAP32 读取整数数组的值
+            const arrayLength = 5;
+            const intArray = new Int32Array(Module.HEAP32.buffer, intArrayPointer, arrayLength);
+
+            // 打印整数数组的值
+            console.log("Int Array:", intArray);
         }
     </script>
 </body>

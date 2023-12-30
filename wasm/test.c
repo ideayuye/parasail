@@ -72,11 +72,13 @@ int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     printf("align: %s\n", traceback->comp);
     printf("target: %s\n", traceback->ref);
     printf("\n");
-    int* res[2];
+    int* res = malloc(sizeof(int)*3);
     char* qr = to_buffer(traceback->query);
     char* com = to_buffer(traceback->comp);
-    res[0] = qr;
-    res[1] = com;
+    char* ref = to_buffer(traceback->ref);
+    res[0] = (int)qr;
+    res[1] = (int)com;
+    res[2] = (int)ref;
     parasail_traceback_free(traceback);
     parasail_result_free(result);
     return res;
@@ -110,7 +112,14 @@ void free_str_memory(char* str) {
 	free(str);
 }
 
-
+EMSCRIPTEN_KEEPALIVE
+int* createIntArray() {
+    int* array = (int*)malloc(5 * sizeof(int));
+    for (int i = 0; i < 5; ++i) {
+        array[i] = i * 2;
+    }
+    return array;
+}
 
 
 
