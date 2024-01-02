@@ -10,7 +10,7 @@ int main()
     parasail_result_t* result;
     
     const char *s = "AAAAAAAAAATTTAAAAAAAAAA";
-    const char *t = "AAAAAAAAAAAAAAAAAAAA";
+    const char *t = "TTAAAAAAAAAAAAAAAAAAAA";
 
     /* SSE4 alignment */
     result = parasail_sg_trace_striped_sse41_128_16(

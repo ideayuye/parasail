@@ -25,11 +25,12 @@
             const b = createStr(inputString1);
             const matrix = createStr('blosum62');
             let res = Module._parasail_sw_wrap(a, b, matrix);
-            const arrRes = new Int32Array(Module.HEAP32.buffer, res, 3);
+            const arrRes = new Int32Array(Module.HEAP32.buffer, res, 4);
             console.log(arrRes, 'arr');
             console.log('query:', Module.UTF8ToString(arrRes[0]));
             console.log('align:', Module.UTF8ToString(arrRes[1]));
             console.log('ref:', Module.UTF8ToString(arrRes[2]));
+            console.log("socre:", arrRes[3]);
             batchFree([res, a, b, matrix, arrRes]);
 
         }

@@ -7,8 +7,7 @@
 #include <emscripten.h>
 
 int main(int arc, char** argv) {
-	printf("it is work!\n");
-    int major = 0;
+    /*int major = 0;
     int minor = 0;
     int patch = 0;
     parasail_result_t* result = NULL;
@@ -28,7 +27,7 @@ int main(int arc, char** argv) {
     else {
         printf("pass\n");
     }
-    parasail_result_free(result);
+    parasail_result_free(result);*/
 	return 0;
 }
 
@@ -61,7 +60,13 @@ int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     // parasail_matrix_t* matrix = &parasail_blosum62;
 
     parasail_result_t* result = NULL;
-    result = parasail_sw_trace(s, lena, t, lenb, 10, 1, matrix);
+    result = parasail_sw_trace_scan(s, lena, t, lenb, 10, 1, matrix);
+
+
+    parasail_traceback_generic(
+        s, strlen(s), t, strlen(t),
+        "A", "B", matrix,
+        result, '|', '+', '-', 79, 10, 1);
 
     parasail_traceback_t* traceback = NULL;
 
@@ -71,29 +76,22 @@ int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     printf("query: %s\n", traceback->query);
     printf("align: %s\n", traceback->comp);
     printf("target: %s\n", traceback->ref);
+    printf("score: %d; match: %d; end_query: %d; end_ref: %d; \n", result->score, result->stats->matches, result->end_query, result->end_ref);
     printf("\n");
-    int* res = malloc(sizeof(int)*3);
-    char* qr = to_buffer(traceback->query);
+    int* res = malloc(sizeof(int)*4);
+    char* qr = to_buffer(traceback->ref);
     char* com = to_buffer(traceback->comp);
-    char* ref = to_buffer(traceback->ref);
-    res[0] = (int)qr;
-    res[1] = (int)com;
-    res[2] = (int)ref;
+    char* target = to_buffer(traceback->query);
+    res[0] = (int)qr; // 第一条序列比对结果
+    res[1] = (int)com; // 第二条序列比对结果
+    res[2] = (int)target;
+    res[3] = result->score; // 分数
+    res[4] = result->end_query; // 输入第二条序列的匹配结束位置
+    res[5] = result->end_ref; // 输入第一条序列的匹配结束位置
     parasail_traceback_free(traceback);
     parasail_result_free(result);
     return res;
 }
-
-// char* get_query(parasail_traceback_t* traceback) {
-//     char* qr = traceback->query;
-//     char* buffer = (char*)malloc(strlen(qr) + 1);
-//     // Copy the string to the allocated memory
-// 	strcpy(buffer, qr);
-//     // parasail_traceback_free(traceback);
-
-//     // parasail_result_free(result);
-//     return buffer;
-// }
 
 EMSCRIPTEN_KEEPALIVE
 int* create_buffer(int length) {
