@@ -4,11 +4,11 @@ class MatchResult {
         this.originalQuery = originalQuery;
         this.originalTarget = originalTarget;
         this.query = Module.UTF8ToString(arrRes[0]);
-        this.target = Module.UTF8ToString(arrRes[2]);
         this.align = Module.UTF8ToString(arrRes[1]);
+        this.target = Module.UTF8ToString(arrRes[2]);
         this.score = arrRes[3];
-        this.endQuery = arrRes[5];
-        this.endTarget = arrRes[4];
+        this.endQuery = arrRes[4];
+        this.endTarget = arrRes[5];
     }
 
     get queryGaps() {
@@ -20,11 +20,11 @@ class MatchResult {
     }
 
     get queryStart() {
-        return this.endQuery + 1 - this.originalQuery.length + this.queryGaps;
+        return this.endQuery + 1 - this.query.replaceAll('-', '').length + 1;
     }
 
     get targetStart() {
-        return this.endTarget + 1 - this.originalTarget.length + this.targetGaps;
+        return this.endTarget + 1 - this.target.replaceAll('-', '').length + 1;
     }
 
     get matches() {

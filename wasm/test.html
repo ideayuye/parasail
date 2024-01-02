@@ -7,7 +7,9 @@
 </head>
 <body>
     <div>wa test lid</div>
+    
     <script src="./build/wa_test.js"></script>
+    <script src="./MatchParse.js"></script>
     <script>
         function createStr(inputString) {
             const stringLength = Module.lengthBytesUTF8(inputString) + 1; // ���� null ��ֹ��
@@ -19,31 +21,22 @@
             arr.forEach(a => Module._free_str_memory(a))
         }
         function tx() {
-            const inputString = 'CAGCTGAGCTTTCCACCCAGCGCGGGTGCATTCTGGCTCTTATATATACTTATTGTCATGACAGAGTATATTGTACTGTAATT';
-            const inputString1 = 'TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCATACTGTAATT';
-            const a = createStr(inputString);
-            const b = createStr(inputString1);
+            const query = 'CAGCTGAGCTTTCCACCCAGCGCGGGTGCATTCTGGCTCTTATATATACTTATTGTCATGACAGAGTATATTGTACTGTAATT';
+            const target = 'TACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCATACTGTAATT';
+            const a = createStr(query);
+            const b = createStr(target);
             const matrix = createStr('blosum62');
-            let res = Module._parasail_sw_wrap(a, b, matrix);
-            const arrRes = new Int32Array(Module.HEAP32.buffer, res, 4);
-            console.log(arrRes, 'arr');
-            console.log('query:', Module.UTF8ToString(arrRes[0]));
-            console.log('align:', Module.UTF8ToString(arrRes[1]));
-            console.log('ref:', Module.UTF8ToString(arrRes[2]));
-            console.log("socre:", arrRes[3]);
+            let res = Module._parasail_nw_wrap(a, b, matrix);
+            const arrRes = new Int32Array(Module.HEAP32.buffer, res, 6);
+            const matchItem = new MatchResult(arrRes, query, target);
+            console.log(matchItem, 'match res');
+            // console.log(arrRes, 'arr');
+            // console.log('query:', Module.UTF8ToString(arrRes[0]));
+            // console.log('align:', Module.UTF8ToString(arrRes[1]));
+            // console.log('ref:', Module.UTF8ToString(arrRes[2]));
+            // console.log("socre:", arrRes[3]);
             batchFree([res, a, b, matrix, arrRes]);
 
-        }
-        function qs() {
-            // 调用 createIntArray 获取整数数组的指针
-            const intArrayPointer = Module._createIntArray()
-
-            // 使用 HEAP32 读取整数数组的值
-            const arrayLength = 5;
-            const intArray = new Int32Array(Module.HEAP32.buffer, intArrayPointer, arrayLength);
-
-            // 打印整数数组的值
-            console.log("Int Array:", intArray);
         }
     </script>
 </body>

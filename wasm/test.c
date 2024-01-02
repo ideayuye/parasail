@@ -37,14 +37,19 @@ char* to_buffer(char* qr) {
     return buffer;
 }
 
-EMSCRIPTEN_KEEPALIVE
-int add (int a, int b) {
-	
-	//print_value(a+b);
-	/*for (int i = 0; i < sizeof(men); i++) {
-		printf("val: %d /n", men[i]);
-	}*/
-	return a + b + 100;
+// 把结果页转换成js能接收的格式
+int* transfer_result(parasail_result_t* result, parasail_traceback_t* traceback) {
+    int* res = malloc(sizeof(int)*6);
+    char* qr = to_buffer(traceback->query);
+    char* com = to_buffer(traceback->comp);
+    char* target = to_buffer(traceback->ref);
+    res[0] = (int)qr; // 第一条序列比对结果
+    res[1] = (int)com; 
+    res[2] = (int)target; // 第二条序列比对结果
+    res[3] = result->score; // 分数
+    res[4] = result->end_query; // 输入第一条序列的匹配结束位置
+    res[5] = result->end_ref; // 输入第二条序列的匹配结束位置
+    return res;
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -62,6 +67,38 @@ int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     parasail_result_t* result = NULL;
     result = parasail_sw_trace_scan(s, lena, t, lenb, 10, 1, matrix);
 
+    // parasail_traceback_generic(
+    //     s, strlen(s), t, strlen(t),
+    //     "A", "B", matrix,
+    //     result, '|', '+', '-', 79, 10, 1);
+
+    parasail_traceback_t* traceback = NULL;
+
+    /* test new traceback string functions */
+    traceback = parasail_result_get_traceback(result, s, lena, t, lenb, matrix, '|', ':', ' ');
+    // printf("\nTraceback string function\n");
+    // printf("query: %s\n", traceback->query);
+    // printf("align: %s\n", traceback->comp);
+    // printf("target: %s\n", traceback->ref);
+    // printf("score: %d; match: %d; end_query: %d; end_ref: %d; \n", result->score, result->stats->matches, result->end_query, result->end_ref);
+    // printf("\n");
+    int* res = transfer_result(result, traceback);
+    parasail_traceback_free(traceback);
+    parasail_result_free(result);
+    return res;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int* parasail_nw_wrap(char* s, char* t, char* matrixname) {
+    const parasail_matrix_t* matrix = parasail_matrix_lookup(matrixname);
+    printf("matrix: %s \n", matrixname);
+
+    int lena = strlen(s);
+    int lenb = strlen(t);
+    // parasail_matrix_t* matrix = &parasail_blosum62;
+
+    parasail_result_t* result = NULL;
+    result = parasail_nw_trace_scan(s, lena, t, lenb, 10, 1, matrix);
 
     parasail_traceback_generic(
         s, strlen(s), t, strlen(t),
@@ -71,23 +108,9 @@ int* parasail_sw_wrap(char* s, char* t, char* matrixname) {
     parasail_traceback_t* traceback = NULL;
 
     /* test new traceback string functions */
-    traceback = parasail_result_get_traceback(result, s, lena, t, lenb, matrix, '|', ':', '.');
-    printf("\nTraceback string function\n");
-    printf("query: %s\n", traceback->query);
-    printf("align: %s\n", traceback->comp);
-    printf("target: %s\n", traceback->ref);
-    printf("score: %d; match: %d; end_query: %d; end_ref: %d; \n", result->score, result->stats->matches, result->end_query, result->end_ref);
-    printf("\n");
-    int* res = malloc(sizeof(int)*4);
-    char* qr = to_buffer(traceback->ref);
-    char* com = to_buffer(traceback->comp);
-    char* target = to_buffer(traceback->query);
-    res[0] = (int)qr; // 第一条序列比对结果
-    res[1] = (int)com; // 第二条序列比对结果
-    res[2] = (int)target;
-    res[3] = result->score; // 分数
-    res[4] = result->end_query; // 输入第二条序列的匹配结束位置
-    res[5] = result->end_ref; // 输入第一条序列的匹配结束位置
+    traceback = parasail_result_get_traceback(result, s, lena, t, lenb, matrix, '|', ':', ' ');
+    
+    int* res = transfer_result(result, traceback);
     parasail_traceback_free(traceback);
     parasail_result_free(result);
     return res;
@@ -109,17 +132,5 @@ void free_str_memory(char* str) {
 	// Free the allocated memory
 	free(str);
 }
-
-EMSCRIPTEN_KEEPALIVE
-int* createIntArray() {
-    int* array = (int*)malloc(5 * sizeof(int));
-    for (int i = 0; i < 5; ++i) {
-        array[i] = i * 2;
-    }
-    return array;
-}
-
-
-
 
 
