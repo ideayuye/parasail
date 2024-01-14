@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "emcc -I../ test.c -c -o build/res.o",
     "link": "emcc build/res.o libparasail.a -o build/wa_test.js  -s WASM=1 -s EXPORTED_RUNTIME_METHODS=\"['UTF8ToString', 'lengthBytesUTF8', 'stringToUTF8']\"",
-    "done": "npm run build & npm run link"
+    "done": "npm run build & npm run link",
+    "release": "emcc build/res.o libparasail.a -o build/wa_test.js -s MODULARIZE=1 -s EXPORT_ES6=1 -s ENVIRONMENT=web -s WASM=1 -s EXPORTED_RUNTIME_METHODS=\"['UTF8ToString', 'lengthBytesUTF8', 'stringToUTF8']\""
+
   },
   "author": "",
   "license": "ISC"
